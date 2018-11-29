@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Ajouter un nouveau sondage{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <a href="{{ url_for('page_principale') }}">Retour</a>
+  <form method="post">
+    <label for="key">Entrez la clé du sondage (ex : 6vgqnfnqxait989w)</label>
+    <input name="key" id="key" required>
+    <input type="submit" value="Ajouter">
+  </form>
+{% endblock %}
