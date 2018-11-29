@@ -26,7 +26,7 @@ target_metadata = current_app.extensions['migrate'].db.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
+SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
