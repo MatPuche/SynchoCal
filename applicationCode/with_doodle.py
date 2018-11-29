@@ -11,7 +11,6 @@ import time
 from . import with_calendar
 
 
-
 url="https://doodle.com/api/v2.0/polls/"
 
 #On introduit service
@@ -49,14 +48,7 @@ def conversion(eventdate,titre,lieu,description):
     return res
 
 
-
-
-
-def remplissage_doodle(preferences,optionsHash,key):
-    participantKey = "et5qinsv"
-    nom_utilisateur="Thib"
-    #nom_utilisateur à recuperer dans la bd
-
+def remplissage_doodle(preferences,optionsHash,key, nom_utilisateur, participantKey):
 
     #Json à envoyer pour remplir le doodle
     envoi = {"name" : nom_utilisateur, "preferences" :
@@ -69,20 +61,14 @@ def remplissage_doodle(preferences,optionsHash,key):
 
     #requête post pour écrire pour la première fois dans le doodle
     ri = rq.post(url2, json = envoi)
-    print(ri.text)
 
 
 
 
-
-
-def recup_creneau( key):
-
+def recup_creneau(key,nom_utilisateur, participant_key):
 
     #1er janvier 1970 en date python
     a = datetime.datetime(1970, 1, 1)
-
-
 
     #on stocke le json dans le dictionnaire l
     r = rq.get(url+key)
@@ -208,9 +194,10 @@ def recup_creneau( key):
 
 
             i+=1
-    #on converti la liste des horaires des créneaux en liste des événements qu'on va envoyé au calendrier
+
+    #on convertit la liste des horaires des créneaux en liste des événements qu'on va envoyer au calendrier
     eventdate2=conversion(eventdate,titre,lieu,description)
-    remplissage_doodle(preferences,optionsHash,key)
+    remplissage_doodle(preferences,optionsHash,key, nom_utilisateur, participant_key)
 
     #Cette fonction renvoie la liste des évenement à reserver dans le calendrier, la liste des préférences à envoyer au doodle et l'optionhash qui est utile
     #pour ecrire dans un doodle.
@@ -218,7 +205,6 @@ def recup_creneau( key):
 
 
 def reserve_creneaux(eventdate, key):
-
 
     eventfinal=[]
 
@@ -241,37 +227,31 @@ def reserve_creneaux(eventdate, key):
         #On l'ajoute à la liste des evénement, cette liste est comme eventdate sauf qu'on a les id en plus
         eventfinal.append(event[j])
 
-
-
-
     return eventfinal
 
 
 
 #Cette fonction permet d'effacer du calendrier tous les créneaux reservés précedement à partir du doodle afin de tout recommencer lors d'une mis à jour
-def efface(key):
+def efface(eventdate):
     #On recupère les evenement à effacer et on les supprime
-    f="a"
-    for line in f :
+    for evenement in eventdate :
         try:
             service.events().delete(calendarId='primary', eventId=line['id']).execute()
         except:
-            #Au cas ou le propriétaire du calendrier à supprimer l'evn à la main
+            #Au cas ou le propriétaire du calendrier a supprimé l'evenement à la main
             print('Déja sup')
 
 
-
-
-#Fonction qui permet de mettre à jour les réponses apportés au doodle et les evn réservés, par exemple si le doodle est modifié
-def mise_a_jour(key,nom_utilisateur):
+#Fonction qui permet de mettre à jour les réponses apportées au doodle et les evnt réservés, par exemple si le doodle est modifié
+def mise_a_jour(key,nom_utilisateur,eventdate, participant_key):
 
     #On commence par tout effacer dans le calendrier
-    efface(key)
+    efface(eventdate)
 
     #on récupère les créneaux ou on est libre
-    eventts=recup_creneau(url+key, key)
+    eventts=recup_creneau(key, nom_utilisateur, participant_key)
     #Et enfin on reserve dans le calendrier les créneaux libres
-    creneau_reserve=reservecreneaux(eventts[0],key)
+    creneau_reserve=reserve_creneaux(eventts[0],key)
     #On récupère de la fonction recupcreneaux les préferneces pour les envoyer au doodle
     preferences = eventts[1]
 
@@ -279,12 +259,12 @@ def mise_a_jour(key,nom_utilisateur):
     participantKey = "et5qinsv"
     optionsHash = eventts[2]
 
-    #On récupère tout le json du doodle pour retouver l'id de la personne considéré par la mise à jour
+    #On récupère tout le json du doodle pour retouver l'id de la personne considérée par la mise à jour
     l=rq.get(url+key)
     ri=json.loads(l.content)
     li=0
 
-    #on attend de tomber sur le participant qui a le même nom que celui qui a le calendrier
+    #on attend de tomber sur le participant ayant le même nom que le propriétaire du calendrier
     while(ri['participants'][li]['name']!=nom_utilisateur):
         li+=1
 
@@ -298,9 +278,3 @@ def mise_a_jour(key,nom_utilisateur):
     #requête put qui modifie un post précedent
     ra = rq.put(url2, json = envoi)
     return creneau_reserve
-
-
-
-
-def main():
-    print('main')

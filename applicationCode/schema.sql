@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS sondage_user;
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
+  nom_doodle TEXT NOT NULL,
   password TEXT NOT NULL
 );
 
@@ -17,7 +18,7 @@ CREATE TABLE sondage (
   date_maj DATETIME,
   lieu TEXT,
   description TEXT,
-  liste_options TEXT NOT NULL
+  liste_options JSON NOT NULL
 );
 
 CREATE TABLE sondage_user (

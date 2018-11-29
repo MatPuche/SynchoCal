@@ -20,7 +20,7 @@
       </br>{{ sondage['description'] }}
       </br>Dernière mise à jour : {{ sondage['date_maj'] }}</p>
 
-    <form action="{{ url_for('page_principale.mise_a_jour', key=sondage['key']) }}" method="post">
+    <form action="{{ url_for('page_principale.mise_a_jour', key=sondage['key'], id=g.user['id']) }}" method="post">
       <input type="submit" value = "Mettre à jour">
     </form>
     <form action="{{ url_for('page_principale.supprimer', key=sondage['key']) }}" method="post">
