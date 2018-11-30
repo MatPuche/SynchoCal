@@ -17,6 +17,7 @@ def inscription():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        nom_doodle = request.form['nom_doodle']
         db = get_db()
         error=None
 
@@ -24,6 +25,8 @@ def inscription():
             error = 'Veuillez entrer un nom d\'utilisateur.'
         elif not password:
             error = 'Veuillez entrer un mot de passe pour votre compte.'
+        elif not nom_doodle:
+            error = 'Veuillez entrer un nom pour le remplissage des Doodle.'
         elif db.execute(
             'SELECT id FROM user WHERE username = ?', (username,)
         ).fetchone() is not None:
@@ -31,8 +34,8 @@ def inscription():
 
         if error is None:
             db.execute(
-                'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, generate_password_hash(password))
+                'INSERT INTO user (username, password, nom_doodle) VALUES (?, ?, ?)',
+                (username, generate_password_hash(password), nom_doodle)
             )
             db.commit()
 
