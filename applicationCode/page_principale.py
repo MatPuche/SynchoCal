@@ -15,7 +15,11 @@ bp = Blueprint('page_principale', __name__)
 def liste_sondages():
     db = get_db()
     sondages = db.execute(
+<<<<<<< HEAD
         'SELECT * FROM sondage JOIN (SELECT sondage_key FROM sondage_user WHERE user_id = ?) sond ON sondage.key=sond.sondage_key',(g.user['id'])
+=======
+        'SELECT * FROM sondage JOIN (SELECT sondage_key FROM sondage_user WHERE user_id = ?) sond ON sondage.key=sond.sondage_key', g.user['id']
+>>>>>>> de4363be669cd5653d1912cd18647f0a5910c770
     ).fetchall()
     return render_template('liste_sondages.html', sondages=sondages)
 
