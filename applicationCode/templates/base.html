@@ -6,7 +6,7 @@
   <h1>SynchroCal</h1>
   <ul>
     {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
+      <li><span>{{ g.user['username'] }} </span>
       <li><a href="{{ url_for('auth.logout') }}">Se déconnecter</a>
     {% else %}
       <li><a href="{{ url_for('auth.inscription') }}">S'inscrire</a>

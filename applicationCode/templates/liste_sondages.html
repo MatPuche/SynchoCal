@@ -1,33 +1,50 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Sondages en cours{% endblock %}</h1>
-  {% if g.user %}
-    <a class="action" href="{{ url_for('page_principale.ajouter') }}">Ajouter un nouveau sondage</a>
-  {% endif %}
-{% endblock %}
-
 {% block content %}
+</br>
+<TABLE width="100%" class="sondages" align="center">
+  <TR>
+    <TD class="sond1">
+        <span style="float: right; text-align: right; padding: 1rem 1rem;">
+          {% if g.user %}
+            <a class="action" href="{{ url_for('page_principale.ajouter') }}">Ajouter un nouveau sondage</a>
+          {% endif %}
+        </span>
+          <h2>SONDAGES EN COURS</h2>
+    </TD>
+  </TR>
   {% for sondage in sondages %}
-  </br>
-      <header>
-        <div>
+  <TR>
+    <TD>
+    <TABLE width= "100%" class="sond_indiv">
+      <TR>
+        <TD align="center">
           <h3>{{ sondage['titre'] }}</h3>
-        </div>
-      </header>
-      <p class="evenement"> Ajouté le {{ sondage['date_entree'] }}
-      </br>{{ sondage['lieu'] }}
-      </br>{{ sondage['description'] }}
-      </br>Dernière mise à jour : {{ sondage['date_maj'] }}</p>
-
-    <form action="{{ url_for('page_principale.mise_a_jour', key=sondage['key'], id=g.user['id']) }}" method="post">
-      <input type="submit" value = "Mettre à jour">
-    </form>
-    <form action="{{ url_for('page_principale.supprimer', key=sondage['key']) }}" method="post">
-      <input class="danger" type="submit" value = "Supprimer" onclick="return confirm('Etes-vous sur de vouloir supprimer ce sondage?');">
-    </form>
+        </TD>
+        <TD rowspan="2" width="40%" align="center">
+          <form action="{{ url_for('page_principale.mise_a_jour', key=sondage['key'], id=g.user['id']) }}" method="post">
+          <input type="submit" value = "Mettre à jour">
+          </form>
+          </br>
+          <form action="{{ url_for('page_principale.supprimer', key=sondage['key']) }}" method="post">
+          <input class="danger" type="submit" value = "Supprimer" onclick="return confirm('Etes-vous sur de vouloir supprimer ce sondage?');">
+          </form>
+        </TD>
+      </TR>
+      <TR>
+          <TD class="caracteristiques" width="60%">
+            </br>Lieu : {{ sondage['lieu'] }}
+            </br>Details : {{ sondage['description'] }}</p>
+            <p class="evenement"><span class="petit"> Ajouté le {{ sondage['date_entree'] }} ; Dernière mise à jour : {{ sondage['date_maj'] }}</span>
+          </TD>
+      </TR>
+    </TABLE>
     {% if not loop.last %}
-      <hr>
+    </br>
     {% endif %}
+    </TD>
+  </TR>
+
   {% endfor %}
+</TABLE>
 {% endblock %}
