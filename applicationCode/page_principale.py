@@ -15,7 +15,7 @@ bp = Blueprint('page_principale', __name__)
 def liste_sondages():
     db = get_db()
     sondages = db.execute(
-        'SELECT * FROM sondage JOIN (SELECT sondage_key FROM sondage_user WHERE user_id = ?) sond ON sondage.key=sond.sondage_key', g.user['id']
+        'SELECT * FROM sondage'
     ).fetchall()
     return render_template('liste_sondages.html', sondages=sondages)
 
@@ -39,7 +39,7 @@ def ajouter():
             #OU EST CE QU'ON TROUVE LA PARTICIPANT KEY?
             participant_key = "et5qinsv"
 
-            sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key)
+            sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key,False)
             titre=sond[3]
             lieu=sond[4]
             description=sond[5]
@@ -89,6 +89,10 @@ def mise_a_jour(key,id):
 @login_required
 def supprimer(key):
     db = get_db()
+    eventdate = eval((db.execute(
+                            'SELECT liste_options FROM sondage WHERE key = ?', (key,)
+                            ).fetchone())['liste_options'])
+    with_doodle.efface(eventdate)
     db.execute(
                 'DELETE FROM sondage WHERE key = ?',(key,)
             )
