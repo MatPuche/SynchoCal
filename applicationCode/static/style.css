@@ -1,4 +1,4 @@
-html { font-family: sans-serif; background: #9ED8FF; padding: 10px; }
+html { font-family: Helvetica, sans-serif; background: #9ED8FF; padding: 10px; }
 body { max-width: 1000px; margin: 0 auto;}
 h1 {
   font-family: serif;
@@ -7,20 +7,52 @@ h1 {
   margin: 2rem 0;
   text-shadow: #000000 0.5px 0.5px, #000000 -0.5px 0.5px, #000000 -0.5px -0.5px, #000000 1px -0.5px;
 }
-h2 { font-family: serif; font-size: 30px; color: #01304F; }
-h3  { font-family: arial; font-size: 20px; margin: 0.5rem 0 0 0 ; font-style: italic;}
+h2 { font-family:Georgia, serif; font-size: 30px; color: #01304F; }
+h3  { font-family: Georgia, serif; font-size: 20px; margin: 0.5rem 0 0 0 ; font-style: italic;}
 
-nav { background: #D1ECFE; display: flex; align-items: center; padding: 0.5rem 1rem; }
+nav {
+  background: #D1ECFE;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  box-shadow: 1px 1px 12px #555;
+}
 nav h1 { flex: auto; margin: 0; }
 nav h1 a { text-decoration: none; padding: 0.25rem 0.5rem; }
 nav ul  { display: flex; list-style: none; margin: 0; padding: 0; }
 nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 
 input.danger { color: #cc2f2e; }
-input[type=submit] { align-self: start; min-width: 10em; }
+input[type=submit] { align-self: start; min-width: 10em;  border-radius: 10px; background-color: #DCF4FD;}
+input[type=text] {
+  width: 50%;
+  border-radius: 10px;
+  background-color: #EBF8FE;
+  height: 20px;}
 
-.sondages { background : #D1ECFE; padding :0 1rem 1rem 1rem;}
-.sond_indiv {background : #79CDD2;}
+a { color: #377ba8; }
+
+.tableau {
+  background : #D1ECFE;
+  padding :0 1rem 1rem 1rem;
+  border-radius: 20px;
+  box-shadow: 1px 1px 12px #555;
+}
+.sond_indiv {
+  background : #79CDD2;
+  border-radius: 20px;
+  border:1px solid #048F8D;
+}
 .sond1 {padding: 0 0 0 1rem; }
 .petit{font-size: 10px;}
-.caracteristiques{padding-left: 1.5rem;}
+.moyen {font-size: 15px;}
+.caracteristiques{padding-left: 1.8rem;}
+.fond {
+  padding-left: 0.8rem;
+  background : #79CDD2;
+  border-radius: 15px;
+  border:1px solid #048F8D;
+}
+.saisie {width: 95%; background-color: #EBF8FE;}
+.case {padding: 1rem}
