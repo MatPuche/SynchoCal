@@ -1,14 +1,36 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Ajouter un nouveau sondage{% endblock %}</h1>
-{% endblock %}
-
 {% block content %}
-  <a href="{{ url_for('page_principale') }}">Retour</a>
-  <form method="post">
-    <label for="key">Entrez la clé du sondage (ex : 6vgqnfnqxait989w)</label>
-    <input name="key" id="key" required>
-    <input type="submit" value="Ajouter">
-  </form>
+</br>
+<TABLE width="100%" class="tableau" align="center">
+  <TR>
+    <TD class="sond1">
+          <h2>{% block title %}Ajouter un nouveau sondage{% endblock %}</h2>
+    </TD>
+  </TR>
+
+ <TR>
+   <TD>
+     <TABLE width= "100%" class="fond">
+       <TR>
+         <TD class ="case">
+          <form method="post">
+            <label for="key"><span style="padding: 1rem;">Entrez la clé du sondage <span class="petit">(ex : 6vgqnfnqxait989w)</span></span></label>
+            </BR></br>
+            <span style="float: right; text-align: right; padding: 0 0.5rem;">
+              <input type="submit" value="Ajouter">
+            </span>
+            <input type="text" name="key" id="key" required>
+          </form>
+        </TD>
+      </TR>
+    </TABLE>
+  </TD>
+</TR>
+</TABLE>
+
+<span style="float: right; text-align: right; padding: 2rem 2rem;">
+    <a href="{{ url_for('page_principale') }}">Retour</a>
+</span>
+
 {% endblock %}

@@ -12,8 +12,9 @@ CREATE TABLE user (
 );
 
 CREATE TABLE sondage (
-  key TEXT UNIQUE NOT NULL,
-  titre TEXT UNIQUE NOT NULL,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  key TEXT NOT NULL,
+  titre TEXT NOT NULL,
   date_entree DATETIME,
   date_maj DATETIME,
   lieu TEXT,

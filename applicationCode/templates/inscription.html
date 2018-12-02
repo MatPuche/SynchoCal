@@ -1,21 +1,39 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Inscription{% endblock %}</h1>
-{% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="username">Choisissez un nom d'utilisateur</label>
-    <input name="username" id="username" required>
-    <label for="password">Choisissez un mot de passe</label>
-    <input type="password" name="password" id="password" required>
-    <label for="nom_doodle">Choisissez un nom qui sera utilisé pour le remplissage des sondages</label>
-    <input name="nom_doodle" id="nom_doodle" required>
-    </br></br>
+</br>
+<TABLE width="100%" class="tableau" align="center">
+  <TR>
+    <TD class="sond1">
+        <h2>Inscription</h2>
+    </TD>
+  </TR>
+  <TR>
+    <TD>
+      <TABLE width= "100%" class="fond">
+        <TR>
+          <TD class="case">
+            <form method="post">
+            <label for="username">Choisissez un nom d'utilisateur :</label>
+            </br><input class="saisie" name="username" id="username" required>
+            </br></br>
+            <label for="password">Choisissez un mot de passe :</label>
+            </br><input class="saisie" type="password" name="password" id="password" required>
+            </br></br>
+            <label for="nom_doodle">Choisissez un nom qui sera utilisé pour le remplissage des sondages :</label>
+            </br><input class="saisie" name="nom_doodle" id="nom_doodle" required>
+            </br></br>
 
-    <a href="https://accounts.google.com/signin/oauth/oauthchooseaccount?client_id=444601383768-oidslq26hl5c4hjq1b2fiu161ugp72fo.apps.googleusercontent.com&as=R711Peftdn1ydQBc6ymhHw&destination=http%3A%2F%2Flocalhost%3A8080&approval_state=!ChRYTWEzeEtMYXVDbk03TU1uQ19YcRIfazcxSjBWNDhvY2NkMEVBN1JaNXdOM085QktHbGRSWQ%E2%88%99APNbktkAAAAAW__fV1yp79U-6jE7-eiSypFmQW92kGT5&xsrfsig=AHgIfE-7GnGEXwSCSBfKr7sb4KHFHzQ2_Q&flowName=GeneralOAuthFlow"
-     target=_blank>S'inscrire</a>
-      <input type="submit" value="S'inscrire">
-  </form>
+            <a href="https://accounts.google.com/signin/oauth/oauthchooseaccount?client_id=444601383768-oidslq26hl5c4hjq1b2fiu161ugp72fo.apps.googleusercontent.com&as=R711Peftdn1ydQBc6ymhHw&destination=http%3A%2F%2Flocalhost%3A8080&approval_state=!ChRYTWEzeEtMYXVDbk03TU1uQ19YcRIfazcxSjBWNDhvY2NkMEVBN1JaNXdOM085QktHbGRSWQ%E2%88%99APNbktkAAAAAW__fV1yp79U-6jE7-eiSypFmQW92kGT5&xsrfsig=AHgIfE-7GnGEXwSCSBfKr7sb4KHFHzQ2_Q&flowName=GeneralOAuthFlow"
+           target=_blank>S'authentifier sur Google</a>
+            </br></br>
+            <input type="submit" value="S'inscrire">
+            </form>
+          </TD>
+        </TR>
+      </TABLE>
+    </TD>
+  </TR>
+  </TABLE>
 {% endblock %}

@@ -15,7 +15,8 @@ bp = Blueprint('page_principale', __name__)
 def liste_sondages():
     db = get_db()
     sondages = db.execute(
-        'SELECT * FROM sondage'
+        #'SELECT * FROM sondage JOIN sondage_user ON sondage.key=sondage_user.sondage_key'
+        'SELECT * FROM sondage JOIN (SELECT sondage_key FROM sondage_user WHERE user_id = ?) sond ON sondage.key=sond.sondage_key',(g.user['id'],)
     ).fetchall()
     return render_template('liste_sondages.html', sondages=sondages)
 
@@ -36,7 +37,8 @@ def ajouter():
             nom_utilisateur= (db.execute(
                                     'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
                                     ).fetchone())['nom_doodle']
-            #OU EST CE QU'ON TROUVE LA PARTICIPANT KEY?
+
+            #On met une clé au hasard
             participant_key = "et5qinsv"
 
             sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key,False)
@@ -49,7 +51,11 @@ def ajouter():
                 'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
                 ' VALUES (?, ?, ?, ?, ?, ?, ?)',
                 (key, titre, lieu, description,liste_options,date,date)
-
+            )
+            db.execute(
+                'INSERT INTO sondage_user (sondage_key, user_id)'
+                ' VALUES (?, ?)',
+                (key, g.user['id'])
             )
             db.commit()
             crenau_reserve=with_doodle.reserve_creneaux(sond[0],key)
@@ -64,7 +70,7 @@ def ajouter():
 @login_required
 def mise_a_jour(key,id):
 
-    #OU EST CE QU'ON TROUVE LA PARTICIPANT KEY?
+    #on met la même clé (au hasard)
     participant_key = "et5qinsv"
 
     db = get_db()

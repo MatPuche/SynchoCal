@@ -1,12 +1,12 @@
 <!doctype html>
 
 <title>{% block title %}SynchroCal{% endblock %}</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='stylee.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
   <h1>SynchroCal</h1>
   <ul>
     {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
+      <li><span>{{ g.user['username'] }} </span>
       <li><a href="{{ url_for('auth.logout') }}">Se déconnecter</a>
     {% else %}
       <li><a href="{{ url_for('auth.inscription') }}">S'inscrire</a>
