@@ -5,7 +5,7 @@ from . import db
 from . import auth
 from . import page_principale
 from . import page_accueil
-from . import test2
+
 
 def create_app(test_config=None):
 
