@@ -1,3 +1,15 @@
+from __future__ import print_function
+from flask import (Blueprint, flash, g, redirect, render_template, request, url_for)
+import json
+import datetime
+from googleapiclient.discovery import build
+from httplib2 import Http
+from oauth2client import file, client, tools
+import flask
+import argparse
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+
 import functools
 
 from flask import (
@@ -8,6 +20,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from applicationCode.db import get_db
 from . import with_calendar
 from . import with_doodle
+import os
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 #creation d'un blueprint nommé "auth", associé à l'URL /auth
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -65,16 +79,45 @@ def login():
             error = 'Mot de passe incorrect.'
 
         if error is None:
-            service=with_calendar.connection_cal()
-            
+
+
+
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('page_principale.liste_sondages'))
+            return redirect(url_for('auth.connection_cal'))
 
         flash(error)
 
     return render_template('login.html')
 
+@bp.route('/cal')
+def connection_cal():
+    store = file.Storage('token.json')
+    creds = store.get()
+    if not creds or creds.invalid:
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('credentials.json',scopes=['https://www.googleapis.com/auth/calendar'])
+        flow.redirect_uri = flask.url_for('auth.token', _external=True)
+
+
+        authorization_url, state = flow.authorization_url(access_type='offline',include_granted_scopes='true')
+        print('la')
+        print(flask.request.url)
+        return flask.redirect(authorization_url)
+
+@bp.route('/token')
+def token():
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('credentials.json',scopes=['https://www.googleapis.com/auth/calendar'])
+    flow.redirect_uri = flask.url_for('page_principale.liste_sondages', _external=True)
+    authorization_response = flask.request.url
+    print('ici')
+    print(authorization_response)
+    flow.fetch_token(authorization_response=authorization_response)
+    credentials = flow.credentials
+
+
+
+    service = build('calendar', 'v3', http=credentials.authorize(Http()))
+    return service
 #identifie si un utilisateur est connecté dans la session.
 #permet d'ouvrir les pages accessibles seulement par des utilisateurs
 #et d'acceder aux données de leur compte
