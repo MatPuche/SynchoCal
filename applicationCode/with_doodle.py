@@ -14,7 +14,9 @@ from . import with_calendar
 url="https://doodle.com/api/v2.0/polls/"
 
 #On introduit service
-service=with_calendar.connection_cal()
+
+
+
 #Fonction qui permet de convertir les dates de début et de fin d'un créneau doodle sous la forme d'un json. Ce json est sous la forme qu'il faut envoyer à google
 #calendar pour ajouter un evenemet. Prend en argument le titre le lieu et la description du doodle ainsi que la liste des dates des créneaux.
 def conversion(eventdate,titre,lieu,description,allday):
@@ -92,7 +94,7 @@ def remplissage_doodle(preferences,optionsHash,key, nom_utilisateur, participant
 
 
 def recup_creneau(key,nom_utilisateur, participant_key, maj):
-
+    service=with_calendar.connection_cal()
     #1er janvier 1970 en date python
     a = datetime.datetime(1970, 1, 1)
 
@@ -252,7 +254,7 @@ def recup_creneau(key,nom_utilisateur, participant_key, maj):
 
 
 def reserve_creneaux(eventdate, key):
-
+    service=with_calendar.connection_cal()
     eventfinal=[]
 
     #On parcours les evenement qu'on a convertit après avoir récupéré les dates des créneaux dans le doodle
@@ -280,6 +282,7 @@ def reserve_creneaux(eventdate, key):
 
 #Cette fonction permet d'effacer du calendrier tous les créneaux reservés précedement à partir du doodle afin de tout recommencer lors d'une mis à jour
 def efface(eventdate):
+    service=with_calendar.connection_cal()
     #On recupère les evenement à effacer et on les supprime
     for evenement in eventdate :
         try:

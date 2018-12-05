@@ -7,6 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from applicationCode.db import get_db
 from . import with_calendar
+from . import with_doodle
 
 #creation d'un blueprint nommé "auth", associé à l'URL /auth
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -39,7 +40,7 @@ def inscription():
             )
             db.commit()
 
-            with_calendar.connection_cal()
+
             return redirect(url_for('auth.login'))
 
         flash(error)
@@ -48,6 +49,7 @@ def inscription():
 #page pour se connecter à l'application
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -63,6 +65,8 @@ def login():
             error = 'Mot de passe incorrect.'
 
         if error is None:
+            service=with_calendar.connection_cal()
+            
             session.clear()
             session['user_id'] = user['id']
             return redirect(url_for('page_principale.liste_sondages'))

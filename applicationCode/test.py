@@ -8,7 +8,13 @@ import requests as rq
 import json
 import datetime
 import time
+import httplib2
+from oauth2client.contrib import gce
 
+
+credentials = gce.AppAssertionCredentials(
+scope='https://www.googleapis.com/auth/devstorage.read_write')
+http = credentials.authorize(httplib2.Http())
 
 
 url="https://doodle.com/api/v2.0/polls/"
@@ -76,12 +82,18 @@ def remplissage_doodle(preferences,optionsHash,key):
 
 
 def recup_creneau( key):
-    store = file.Storage('token.json')
-    creds = store.get()
-    if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
-        creds = tools.run_flow(flow, store)
-    service = build('calendar', 'v3', http=creds.authorize(Http()))
+##    store = file.Storage('token.json')
+##    creds = store.get()
+##    if not creds or creds.invalid:
+##        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+##        creds = tools.run_flow(flow, store)
+    
+
+    
+    credentials = gce.AppAssertionCredentials(
+    scope='https://www.googleapis.com/auth/devstorage.read_write')
+    http = credentials.authorize(httplib2.Http())
+    service = build('calendar', 'v3', http=credentials.authorize(Http()))
 
     #1er janvier 1970 en date python
     a = datetime.datetime(1970, 1, 1)

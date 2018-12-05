@@ -65,6 +65,8 @@ def ajouter():
     return render_template('ajouter.html')
 
 
+
+
 #L'utilisateur peut mettre à jour ses sondages afin d'actualiser les changements qu'il y aurait pu avoir, ou de voir si il est final
 @bp.route('/<string:key>/<int:id>/mise_a_jour', methods=('POST',))
 @login_required
