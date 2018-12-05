@@ -96,7 +96,7 @@ def connection_cal():
     creds = store.get()
     if not creds or creds.invalid:
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('credentials.json',scopes=['https://www.googleapis.com/auth/calendar'])
-        flow.redirect_uri = flask.url_for('localhost', _external=True)
+        flow.redirect_uri = flask.url_for('http://localhost.fr', _external=True)
 
 
         authorization_url, state = flow.authorization_url(access_type='offline',include_granted_scopes='true')
