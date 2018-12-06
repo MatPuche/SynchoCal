@@ -66,7 +66,7 @@ def login():
 
         if error is None:
             service=with_calendar.connection_cal()
-            
+
             session.clear()
             session['user_id'] = user['id']
             return redirect(url_for('page_principale.liste_sondages'))
