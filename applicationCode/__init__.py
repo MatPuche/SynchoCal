@@ -36,6 +36,5 @@ def create_app(test_config=None):
     app.add_url_rule('/', endpoint='page_principale')
     app.register_blueprint(page_accueil.bp)
 
-
     return app
 app=create_app()
