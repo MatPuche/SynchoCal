@@ -20,7 +20,7 @@ def connection_cal():
         flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
 
         parser = argparse.ArgumentParser(parents=[tools.argparser])
-        flags = parser.parse_args(args=['--noauth_local_webserver'])
+        flags = parser.parse_args(args=[])
 
         creds = tools.run_flow(flow, store, flags)
     service = build('calendar', 'v3', http=creds.authorize(Http()))
