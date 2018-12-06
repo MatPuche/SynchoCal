@@ -22,11 +22,11 @@
           <h3>{{ sondage['titre'] }}</h3>
         </TD>
         <TD rowspan="2" width="40%" align="center">
-          <form action="{{ url_for('page_principale.mise_a_jour', key=sondage['key'], id=g.user['id']) }}" method="post">
+          <form action="{{ url_for('page_principale.mise_a_jour', key=sondage['key'], id=g.user['id'], nom_utilisateur=g.user['nom_doodle']) }}" method="post">
           <input type="submit" value = "Mettre à jour">
           </form>
           </br>
-          <form action="{{ url_for('page_principale.supprimer', key=sondage['key']) }}" method="post">
+          <form action="{{ url_for('page_principale.supprimer', key=sondage['key'], nom_utilisateur=g.user['nom_doodle']) }}" method="post">
           <input class="danger" type="submit" value = "Supprimer" onclick="return confirm('Etes-vous sur de vouloir supprimer ce sondage?');">
           </form>
         </TD>

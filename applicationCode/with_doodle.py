@@ -1,4 +1,4 @@
-#Ce fichier contient toutes les fonctions d'intéraction avec le sondage Doodle
+#Ce fichier contient toutes les fonctions d'intéraction entre le calendrier et le sondage Doodle
 
 from __future__ import print_function
 from googleapiclient.discovery import build
@@ -232,32 +232,15 @@ def reserve_creneaux(eventdate, key):
 
 
 #Cette fonction permet d'effacer du calendrier tous les créneaux reservés précedement à partir du doodle afin de tout recommencer lors d'une mis à jour
-def efface(eventdate):
+def efface(eventdate, key,nom_utilisateur):
     #On recupère les evenement à effacer et on les supprime
     for evenement in eventdate :
+        print(evenement)
         try:
-            service.events().delete(calendarId='primary', eventId=line['id']).execute()
+            service.events().delete(calendarId='primary', eventId=evenement['id']).execute()
         except:
-            #Au cas ou le propriétaire du calendrier a supprimé l'evenement à la main
+            #Au cas où le propriétaire du calendrier a supprimé l'evenement à la main
             print('Déja sup')
-
-
-#Fonction qui permet de mettre à jour les réponses apportées au doodle et les evnt réservés, par exemple si le doodle est modifié
-def mise_a_jour(key,nom_utilisateur,eventdate, participant_key):
-
-    #On commence par tout effacer dans le calendrier
-    efface(eventdate)
-
-    #on récupère les créneaux ou on est libre
-    eventts=recup_creneau(key, nom_utilisateur, participant_key)
-    #Et enfin on reserve dans le calendrier les créneaux libres
-    creneau_reserve=reserve_creneaux(eventts[0],key)
-    #On récupère de la fonction recupcreneaux les préferneces pour les envoyer au doodle
-    preferences = eventts[1]
-
-    #Paramètres important pour écrire dans le doodle
-    participantKey = "et5qinsv"
-    optionsHash = eventts[2]
 
     #On récupère tout le json du doodle pour retouver l'id de la personne considérée par la mise à jour
     l=rq.get(url+key)
@@ -268,13 +251,22 @@ def mise_a_jour(key,nom_utilisateur,eventdate, participant_key):
     while(ri['participants'][li]['name']!=nom_utilisateur):
         li+=1
 
-    #On créé le json à envoyer au doodle pour modifier les choix de l'utilisateur
-    envoi = {"id":ri['participants'][li]['id'],"name" : nom_utilisateur,
-             "optionsHash" : optionsHash, "participantKey": participantKey,
-             "preferences" : preferences}
-
     #Url nécesssaire pour l'envoi des infos
-    url2=url+"/participants/"+str(ri['participants'][li]['id'])
+    url2=url+key+"/participants/"+str(ri['participants'][li]['id'])
+    print(url2)
     #requête put qui modifie un post précedent
-    ra = rq.put(url2, json = envoi)
+    ra = rq.delete(url2)
+
+
+#Fonction qui permet de mettre à jour les réponses apportées au doodle et les evnt réservés, par exemple si le doodle est modifié
+def mise_a_jour(key,nom_utilisateur,eventdate, participant_key):
+
+    #On commence par tout effacer dans le calendrier
+    efface(eventdate, key, nom_utilisateur)
+
+    #on récupère les créneaux ou on est libre
+    eventts=recup_creneau(key, nom_utilisateur, participant_key)
+    #Et enfin on reserve dans le calendrier les créneaux libres
+    creneau_reserve=reserve_creneaux(eventts[0],key)
+
     return creneau_reserve

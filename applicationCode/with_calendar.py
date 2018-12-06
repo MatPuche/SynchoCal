@@ -1,5 +1,3 @@
-#Ce fichier contient toutes les fonctions d'intéraction avec le calendrier
-
 from __future__ import print_function
 import json
 import datetime

@@ -78,10 +78,19 @@ def remplissage_doodle(preferences,optionsHash,key):
 def recup_creneau( key):
     store = file.Storage('token.json')
     creds = store.get()
+
+    print("Strore :")
+    print(store)
+    print("creds :")
+    print(creds)
     if not creds or creds.invalid:
         flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+        print("flow :")
+        print(flow)
         creds = tools.run_flow(flow, store)
+        print(creds)
     service = build('calendar', 'v3', http=creds.authorize(Http()))
+    print("je suis la")
 
     #1er janvier 1970 en date python
     a = datetime.datetime(1970, 1, 1)
@@ -312,3 +321,37 @@ def mise_a_jour(key,nom_utilisateur):
 def main():
     recup_creneau('72338qvegy22acxd')
 
+
+"""try:
+    db = get_db()
+    nom_utilisateur= (db.execute(
+                            'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
+                            ).fetchone())['nom_doodle']
+
+    #On met une clé au hasard
+    participant_key = "et5qinsv"
+
+    sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key)
+    titre=sond[3]
+    lieu=sond[4]
+    description=sond[5]
+    date=datetime.now().date()
+    creneau_reserve=str(with_doodle.reserve_creneaux(sond[0],key))
+    print("cren:")
+    print(creneau_reserve)
+    db.execute(
+        'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
+        ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+        (key, titre, lieu, description,creneau_reserve,date,date)
+    )
+    db.execute(
+        'INSERT INTO sondage_user (sondage_key, user_id)'
+        ' VALUES (?, ?)',
+        (key, g.user['id'])
+    )
+    db.commit()
+    return redirect(url_for('page_principale.liste_sondages'))
+
+except:
+    flash("Cette clé ne correspond à aucun sondage. Entrez une clé valide.")
+"""

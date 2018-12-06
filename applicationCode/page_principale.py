@@ -10,16 +10,17 @@ from datetime import datetime
 
 bp = Blueprint('page_principale', __name__)
 
+#Sur la page principale on affiche les sondages en cours de l'utilisateur
 @bp.route('/')
 @login_required
 def liste_sondages():
     db = get_db()
     sondages = db.execute(
-        #'SELECT * FROM sondage JOIN sondage_user ON sondage.key=sondage_user.sondage_key'
         'SELECT * FROM sondage JOIN (SELECT sondage_key FROM sondage_user WHERE user_id = ?) sond ON sondage.key=sond.sondage_key',(g.user['id'],)
     ).fetchall()
     return render_template('liste_sondages.html', sondages=sondages)
 
+#L'utilisateur peut choisir d'ajouter un nouveau sondage
 @bp.route('/ajouter', methods=('GET', 'POST'))
 @login_required
 def ajouter():
@@ -33,54 +34,56 @@ def ajouter():
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            nom_utilisateur= (db.execute(
-                                    'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
-                                    ).fetchone())['nom_doodle']
+            try:
+                db = get_db()
+                nom_utilisateur= (db.execute(
+                                        'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
+                                        ).fetchone())['nom_doodle']
 
-            #On met une clé au hasard
-            participant_key = "et5qinsv"
+                #On met une clé au hasard
+                participant_key = "et5qinsv"
 
-            sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key)
-            titre=sond[3]
-            lieu=sond[4]
-            description=sond[5]
-            liste_options=str(sond[0])
-            date=datetime.now().date()
-            db.execute(
-                'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
-                ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (key, titre, lieu, description,liste_options,date,date)
-            )
-            db.execute(
-                'INSERT INTO sondage_user (sondage_key, user_id)'
-                ' VALUES (?, ?)',
-                (key, g.user['id'])
-            )
-            db.commit()
-            crenau_reserve=with_doodle.reserve_creneaux(sond[0],key)
-
-            return redirect(url_for('page_principale.liste_sondages'))
+                sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key)
+                titre=sond[3]
+                lieu=sond[4]
+                description=sond[5]
+                date=datetime.now().date()
+                creneau_reserve=str(with_doodle.reserve_creneaux(sond[0],key))
+                db.execute(
+                    'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
+                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    (key, titre, lieu, description,creneau_reserve,date,date)
+                )
+                db.execute(
+                    'INSERT INTO sondage_user (sondage_key, user_id)'
+                    ' VALUES (?, ?)',
+                    (key, g.user['id'])
+                )
+                db.commit()
+                return redirect(url_for('page_principale.liste_sondages'))
+            except:
+                flash("Cette clé ne correspond à aucun sondage. Entrez une clé valide.")
 
     return render_template('ajouter.html')
 
 
 #L'utilisateur peut mettre à jour ses sondages afin d'actualiser les changements qu'il y aurait pu avoir, ou de voir si il est final
-@bp.route('/<string:key>/<int:id>/mise_a_jour', methods=('POST',))
+@bp.route('/<string:key>/<int:id>/<string:nom_utilisateur>/mise_a_jour', methods=('POST',))
 @login_required
-def mise_a_jour(key,id):
+def mise_a_jour(key,id,nom_utilisateur):
 
     #on met la même clé (au hasard)
     participant_key = "et5qinsv"
 
     db = get_db()
-    nom_utilisateur= (db.execute(
-                            'SELECT nom_doodle FROM user WHERE id = ?', (id,)
-                            ).fetchone())['nom_doodle']
     eventdate = eval((db.execute(
                             'SELECT liste_options FROM sondage WHERE key = ?', (key,)
                             ).fetchone())['liste_options'])
+    print("event:")
+    print(eventdate)
     event_maj = str(with_doodle.mise_a_jour(key,nom_utilisateur,eventdate, participant_key))
+    print("eventmaj: ")
+    print(event_maj)
     date_maj=datetime.now().date()
     db.execute(
                 'UPDATE sondage SET liste_options = ?, date_maj = ?'
@@ -91,10 +94,15 @@ def mise_a_jour(key,id):
     return redirect(url_for('page_principale'))
 
 #L'utilisateur peut supprimer ses sondages si il le souhaite
-@bp.route('/<string:key>/supprimer', methods=('POST',))
+@bp.route('/<string:key>/<string:nom_utilisateur>/supprimer', methods=('POST',))
 @login_required
-def supprimer(key):
+def supprimer(key, nom_utilisateur):
     db = get_db()
+    eventdate = eval((db.execute(
+                            'SELECT liste_options FROM sondage WHERE key = ?', (key,)
+                            ).fetchone())['liste_options'])
+
+    with_doodle.efface(eventdate, key, nom_utilisateur)
     db.execute(
                 'DELETE FROM sondage WHERE key = ?',(key,)
             )
