@@ -34,35 +34,35 @@ def ajouter():
         if error is not None:
             flash(error)
         else:
-            try:
-                db = get_db()
-                nom_utilisateur= (db.execute(
-                                        'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
-                                        ).fetchone())['nom_doodle']
+        #try:
+            db = get_db()
+            nom_utilisateur= (db.execute(
+                                    'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
+                                    ).fetchone())['nom_doodle']
 
-                #On met une clé au hasard
-                participant_key = "et5qinsv"
+            #On met une clé au hasard
+            participant_key = "et5qinsv"
 
-                sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key)
-                titre=sond[3]
-                lieu=sond[4]
-                description=sond[5]
-                date=datetime.now().date()
-                creneau_reserve=str(with_doodle.reserve_creneaux(sond[0],key))
-                db.execute(
-                    'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
-                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    (key, titre, lieu, description,creneau_reserve,date,date)
-                )
-                db.execute(
-                    'INSERT INTO sondage_user (sondage_key, user_id)'
-                    ' VALUES (?, ?)',
-                    (key, g.user['id'])
-                )
-                db.commit()
-                return redirect(url_for('page_principale.liste_sondages'))
-            except:
-                flash("Cette clé ne correspond à aucun sondage. Entrez une clé valide.")
+            sond = with_doodle.recup_creneau(key,nom_utilisateur, participant_key)
+            titre=sond[3]
+            lieu=sond[4]
+            description=sond[5]
+            date=datetime.now().date()
+            creneau_reserve=str(with_doodle.reserve_creneaux(sond[0],key))
+            db.execute(
+                'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
+                ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (key, titre, lieu, description,creneau_reserve,date,date)
+            )
+            db.execute(
+                'INSERT INTO sondage_user (sondage_key, user_id)'
+                ' VALUES (?, ?)',
+                (key, g.user['id'])
+            )
+            db.commit()
+            return redirect(url_for('page_principale.liste_sondages'))
+        #except:
+        #    flash("Cette clé ne correspond à aucun sondage. Entrez une clé valide.")
 
     return render_template('ajouter.html')
 
