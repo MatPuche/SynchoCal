@@ -5,6 +5,14 @@ applicationCode/__pycache__/with_calendar.cpython-37.pyc
 applicationCode/__pycache__/with_doodle.cpython-37.pyc
 applicationCode/__pycache__/page_principale.cpython-37.pyc
 applicationCode/__pycache__/with_doodle.cpython-37.pyc
+applicationCode/__pycache__/db.cpython-37.pyc
+applicationCode/__pycache__/page_accueil.cpython-37.pyc
+applicationCode/__pycache__/__init__.cpython-37.pyc
+applicationCode/__pycache__/page_principale.cpython-37.pyc
+
+
+token.json
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

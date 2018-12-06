@@ -6,6 +6,7 @@ from . import auth
 from . import page_principale
 from . import page_accueil
 
+
 def create_app(test_config=None):
 
     #Créé et configure l'application
@@ -27,7 +28,7 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-        
+
     db.init_app(app)
 
     app.register_blueprint(auth.bp)
