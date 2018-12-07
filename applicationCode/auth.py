@@ -22,6 +22,7 @@ from . import with_calendar
 from . import with_doodle
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['DEBUG'] = '1'
 
 
 
