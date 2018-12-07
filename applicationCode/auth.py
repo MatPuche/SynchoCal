@@ -111,7 +111,7 @@ def connection_cal():
 def token():
     print(state)
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('credentials.json',scopes=['https://www.googleapis.com/auth/calendar'],state=state)
-    flow.redirect_uri = flask.url_for('page_principale.liste_sondages', _external=True)
+    flow.redirect_uri =url_for('https://synchocal.herokuapp.com/', _external=True)
     authorization_response = flask.request.url
     print('ici')
     print(authorization_response)
