@@ -9,6 +9,7 @@ import json
 import datetime
 import time
 from . import with_calendar
+from . import auth
 
 
 url="https://doodle.com/api/v2.0/polls/"

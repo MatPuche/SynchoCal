@@ -40,6 +40,7 @@ app = flask.Flask(__name__)
 # key. See http://flask.pocoo.org/docs/0.12/quickstart/#sessions.
 app.secret_key = 'ljgjhkgl'
 
+global service
 
 #formulaire d'inscription à remplir pour créer son compte sur l'application
 @bp.route('/inscription', methods=('GET', 'POST'))
@@ -105,7 +106,7 @@ def login():
             credentials = google.oauth2.credentials.Credentials(
                  **flask.session['credentials'])
 
-            calendar = googleapiclient.discovery.build(
+            service = googleapiclient.discovery.build(
                  API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
             flask.session['credentials'] = credentials_to_dict(credentials)
