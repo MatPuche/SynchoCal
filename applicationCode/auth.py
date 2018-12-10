@@ -99,7 +99,7 @@ def login():
             #return redirect(url_for('page_principale.liste_sondages'))
 
             if 'credentials' not in flask.session:
-              return flask.redirect(url_for('auth.authorize'))
+                return flask.redirect(url_for('auth.authorize'))
 
              # Load credentials from the session.
             credentials = google.oauth2.credentials.Credentials(
@@ -121,12 +121,12 @@ def login():
 @bp.route('/authorize')
 def authorize():
   # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-  flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
       CLIENT_SECRETS_FILE, scopes=SCOPES)
 
-  flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
+    flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
 
-  authorization_url, state = flow.authorization_url(
+    authorization_url, state = flow.authorization_url(
       # Enable offline access so that you can refresh an access token without
       # re-prompting the user for permission. Recommended for web server apps.
       access_type='offline',
@@ -134,9 +134,9 @@ def authorize():
       include_granted_scopes='true')
 
   # Store the state so the callback can verify the auth server response.
-  flask.session['state'] = state
-
-  return flask.redirect(authorization_url)
+    flask.session['state'] = state
+    print(authorization_url)
+    return flask.redirect(authorization_url)
 
 
 @bp.route('/oauth2callback')
