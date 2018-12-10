@@ -15,40 +15,47 @@ url="https://doodle.com/api/v2.0/polls/"
 
 #On introduit service
 service=with_calendar.connection_cal()
-#Fonction qui permet de convertir les dates de début et de fin d'un créneau doodle sous la forme d'un json. Ce json est sous la forme qu'il faut envoyer à google
-#calendar pour ajouter un evenemet. Prend en argument le titre le lieu et la description du doodle ainsi que la liste des dates des créneaux.
-def conversion(eventdate,titre,lieu,description):
-    res=[]
-    for ki in range( len(eventdate)//2):
 
-        event2 = {
-                      'summary': titre,
-                      'location': lieu,
-                      'description': description,
-                      'start': {
-                        'dateTime': eventdate[2*ki],
-                        'timeZone': 'Europe/London',
-                      },
-                      'end': {
-                        'dateTime': eventdate[2*ki+1],
-                        'timeZone': 'Europe/London',
-                      },
-                      'recurrence': [
-                        'RRULE:FREQ=DAILY;COUNT=1'
-                      ],
-                      'reminders': {
-                        'useDefault': False,
-                        'overrides': [
-                          {'method': 'email', 'minutes': 24 * 60},
-                          {'method': 'popup', 'minutes': 10},
-                        ],
-                      },
-                    }
-        res.append(event2)
+#Fonction qui permet de convertir les dates de début et de fin d'un créneau doodle sous la forme d'un json. Ce json est sous la forme qu'il faut envoyer à google
+#calendar pour ajouter un evenement. Prend en argument le titre le lieu et la description du doodle ainsi que la liste des dates des créneaux.
+def conversion(eventdate,titre,lieu,description, jour_entier):
+    res=[]
+    if jour_entier :
+        for ki in range( len(eventdate)//2):
+
+            event2 = {
+                          'summary': titre,
+                          'location': lieu,
+                          'description': description,
+                          'start': {
+                            'dateTime': eventdate[2*ki],
+                            'timeZone': 'Europe/London',
+                          },
+                          'end': {
+                            'dateTime': eventdate[2*ki+1],
+                            'timeZone': 'Europe/London',
+                          },
+                          'recurrence': [
+                            'RRULE:FREQ=DAILY;COUNT=1'
+                          ],
+                          'reminders': {
+                            'useDefault': False,
+                            'overrides': [
+                              {'method': 'email', 'minutes': 24 * 60},
+                              {'method': 'popup', 'minutes': 10},
+                            ],
+                          },
+                        }
+            res.append(event2)
+
+        else :
+            #Ajouter le Json adapté au jour entier
+            print()
+
     return res
 
 
-
+#Fonction qui remplit le Doodle selon les préférences de 'utilisateur receuillies à partir de son calendrier'
 def remplissage_doodle(preferences,optionsHash,key, nom_utilisateur, participantKey):
 
     #Json à envoyer pour remplir le doodle
@@ -65,14 +72,19 @@ def remplissage_doodle(preferences,optionsHash,key, nom_utilisateur, participant
 
 
 
-
 def recup_creneau(key,nom_utilisateur, participant_key):
+
+    #1er janvier 1970 en date python
+    a = datetime.datetime(1970, 1, 1)
 
     #on stocke le json dans le dictionnaire l
     r = rq.get(url+key)
     l = json.loads(r.content)
     optionsHash=l["optionsHash"]
 
+    #le sondage peut être sur des creneaux horraires ou sur des jours entiers.
+    #On initialise à False le booléen qui indique si le sondage est sur des jours entiers ou non.
+    jour_entier = False
 
     #la liste des options (créneaux) de notre doodle (vide pour l'instant)
     liste_options = []
@@ -87,10 +99,8 @@ def recup_creneau(key,nom_utilisateur, participant_key):
     re=0
 
 
-    #1er janvier 1970 en date python
-    a = datetime.datetime(1970, 1, 1)
-
     #D'abord, on récupère la liste des dates des débuts et des fins (alternées 2 à 2) des évènements du Doodle.
+
     #On distingue le cas ou le Doodle est fermé ou non
 
     try:
@@ -100,27 +110,34 @@ def recup_creneau(key,nom_utilisateur, participant_key):
         #Si le sondage est fermé on récupère tous les crénaux qui sont finaux
         for temps in l["options"]:
 
+            jour_entier = jour_entier(temps)
+
             try:
                 #on vérifie si l'évenement est final
                 bool=temps['final']
 
-
                 #Date et heure de commencement de l'évènement
                 secondesEnPlusDebut = int(str(temps["start"])[0:len(str(temps["start"]))])
 
-                #Date et heure de fin de l'évènement
-                secondesEnPlusFin = int(str(temps["end"])[0:len(str(temps["end"]))])
-
-                #On ajoute les deux à la liste des options
+                #On ajoute l'heure de début à la liste des options
                 optionDebut = a + datetime.timedelta(milliseconds = int(secondesEnPlusDebut)+3600000)
                 liste_options.append(optionDebut)
-                optionFin = a + datetime.timedelta(milliseconds = int(secondesEnPlusFin)+3600000)
-                liste_options.append(optionFin)
 
                 #Au début, on met par défaut que la personne est libre à tous les crénaux finaux
                 preferences.append(1)
+
                 #Vu qu'on récupère seulement les crénaux finaux on conserve leur place dans la liste des preferences
                 place.append(re)
+
+                #si le sondage n'est pas sur le jour entier, on récupère l'horraire de fin
+                if not jour_entier :
+
+                    #Date et heure de fin de l'évènement
+                    secondesEnPlusFin = int(str(temps["end"])[0:len(str(temps["end"]))])
+
+                    #On l'ajoute à la liste des options
+                    optionFin = a + datetime.timedelta(milliseconds = int(secondesEnPlusFin)+3600000)
+                    liste_options.append(optionFin)
 
             except:
                 #Si la date n'est pas finale on ajoute 0 aux préférences, et nous n'avons donc pas à nous soucier des dates non-finales
@@ -133,25 +150,32 @@ def recup_creneau(key,nom_utilisateur, participant_key):
         #Si le sondage est toujours ouvert on récupère tous les créneaux du doodle
         for temps in l["options"]:
 
+            jour_entier = jour_entier(temps)
+
             #Date et heure de commencement de l'évènement
             secondesEnPlusDebut = int(str(temps["start"])[0:len(str(temps["start"]))])
 
-            #Date et heure de fin de l'évènement
-            secondesEnPlusFin = int(str(temps["end"])[0:len(str(temps["end"]))])
-
-            #On ajoute les deux à la liste des options
+            #On ajoute l'heure de début à la liste des options
             optionDebut = a + datetime.timedelta(milliseconds = int(secondesEnPlusDebut)+3600000)
             liste_options.append(optionDebut)
-            optionFin = a + datetime.timedelta(milliseconds = int(secondesEnPlusFin)+3600000)
-            liste_options.append(optionFin)
 
             #Par défault on met dans la liste des préférences qu'on est libre à aucun créneaux
             preferences.append(0)
 
             #On ajoute la place de chaque créneau dans la liste des préference
             place.append(re)
-            re+=1
 
+            #si le sondage n'est pas sur le jour entier, on récupère l'horraire de fin
+            if not jour_entier :
+
+                #Date et heure de fin de l'évènement
+                secondesEnPlusFin = int(str(temps["end"])[0:len(str(temps["end"]))])
+
+                #On ajoute les deux à la liste des options
+                optionFin = a + datetime.timedelta(milliseconds = int(secondesEnPlusFin)+3600000)
+                liste_options.append(optionFin)
+
+            re+=1
 
 
     #On stocke les infos importantes du doodle
@@ -165,75 +189,85 @@ def recup_creneau(key,nom_utilisateur, participant_key):
     except:
         description = "Pas de description spécifiée"
 
-    #On récupère la date actuelle en format adapté aux dates du Doodle
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indique le temps UTC
+    #On récupère la date actuelle en format adapté aux dates du Doodle ; 'Z' indique le temps UTC
+    now = datetime.datetime.utcnow().isoformat() + 'Z'
 
     #Nous récupérons les évènements du calendrier sur les créneaux récupérés dans listes_options
 
     i = 1
     eventdate=[]
-    for option in liste_options :
 
-        #si i est pair, c'est une date de début
-        if i%2==1 :
-            debut=str(option)[0:10]+'T'+str(option)[11:20]+'+01:00'
-            i+=1
+    if jour_entier :
+        #Ajouter code pour jour entier
+        print()
 
-        #si i est impair c'est une date de fin
-        else :
-            fin=str(option)[0:10]+'T'+str(option)[11:20]+'+01:00'
-            #on récupère les évènement du calendrier se situant entre début et fin (même s'ils commencent ou terminent après)
-            events_result = service.events().list(calendarId='primary', timeMin=debut, timeMax=fin).execute()
-            events = events_result.get('items', [])
+    else :
 
-            #Si il n'y a pas d'évènement dans le calendrier à ce créneau, on remplit le calendrier en réservant le créneau et on modifie la liste
-            #preference en mettant 1 à la bonne place dans la liste
-            if not events:
-                eventdate.append(debut)
-                eventdate.append(fin)
-                preferences[place[i//2-1]]=1
+        for option in liste_options :
 
+            #si i est pair, c'est une date de début
+            if i%2==1 :
+                debut=str(option)[0:10]+'T'+str(option)[11:20]+'+01:00'
+                i+=1
 
-            i+=1
+            #si i est impair c'est une date de fin
+            else :
+                fin=str(option)[0:10]+'T'+str(option)[11:20]+'+01:00'
+                #on récupère les évènement du calendrier se situant entre début et fin (même s'ils commencent ou terminent après)
+                events_result = service.events().list(calendarId='primary', timeMin=debut, timeMax=fin).execute()
+                events = events_result.get('items', [])
+
+                #Si il n'y a pas d'évènement dans le calendrier à ce créneau, on remplit le calendrier en réservant le créneau et on modifie la liste
+                #preference en mettant 1 à la bonne place dans la liste
+                if not events:
+                    eventdate.append(debut)
+                    eventdate.append(fin)
+                    preferences[place[i//2-1]]=1
+
+                i+=1
 
     #on convertit la liste des horaires des créneaux en liste des événements qu'on va envoyer au calendrier
-    eventdate2=conversion(eventdate,titre,lieu,description)
+    eventdate2 = conversion(eventdate,titre,lieu,description)
     remplissage_doodle(preferences,optionsHash,key, nom_utilisateur, participant_key)
 
     #Cette fonction renvoie la liste des évenement à reserver dans le calendrier, la liste des préférences à envoyer au doodle et l'optionhash qui est utile
     #pour ecrire dans un doodle.
-    return eventdate2,preferences,optionsHash,titre,lieu,description
+    return eventdate2,preferences,optionsHash,titre,lieu,description, jour_entier
 
 
-
-def reserve_creneaux(eventdate, key):
+#On remplit le calendrier avec les créneaux réservés pour le sondage tant qu'il n'est pas terminé
+def reserve_creneaux(eventdate, jour_entier, key):
 
     eventfinal=[]
+    if jour_entier :
+        #Ajouter code jour entier
+        print()
 
-    #On parcours les evenement qu'on a convertit après avoir récupéré les dates des créneaux dans le doodle
-    for k in eventdate:
+    else:
+        #On parcourt les evenements qu'on a converti après avoir récupéré les dates des créneaux dans le doodle
+        for k in eventdate:
 
-        #On reserve le créneaux prévu dans le calendrier
-        service.events().insert(calendarId='primary', body=k).execute()
+            #On reserve le créneaux prévu dans le calendrier
+            service.events().insert(calendarId='primary', body=k).execute()
 
-        #On récupère les événement qu'on vient juste de résérver car lorsqu'on insère un evenenement il y a un id qui est créé par le calendrier et
-        #on en a besoin pour effacer les evenement quand nécessaire
-        event=service.events().list(calendarId='primary', timeMin=k['start']['dateTime'], timeMax=k['end']['dateTime']).execute()['items']
-        j=0
+            #On récupère les événement qu'on vient juste de résérver car lorsqu'on insère un evenenement il y a un id qui est créé par le calendrier et
+            #on en a besoin pour effacer les evenement quand nécessaire
+            event=service.events().list(calendarId='primary', timeMin=k['start']['dateTime'], timeMax=k['end']['dateTime']).execute()['items']
+            j=0
 
-        #La commande précedente renvoie un liste des évenement qui ont un moment de commun avec l'intervalle donné, on parcours donc la liste jusqu'a trouve
-        #l'événement qu'on vient d'insérer en comparant les date de début et de fin
-        while event[j]['end']['dateTime']!=k['end']['dateTime'] and event[j]['start']['dateTime']!=k['start']['dateTime']:
-            j=j+1
+            #La commande précedente renvoie un liste des évenement qui ont un moment de commun avec l'intervalle donné, on parcours donc la liste jusqu'a trouve
+            #l'événement qu'on vient d'insérer en comparant les date de début et de fin
+            while event[j]['end']['dateTime']!=k['end']['dateTime'] and event[j]['start']['dateTime']!=k['start']['dateTime']:
+                j=j+1
 
-        #On l'ajoute à la liste des evénement, cette liste est comme eventdate sauf qu'on a les id en plus
-        eventfinal.append(event[j])
+            #On l'ajoute à la liste des evénement, cette liste est comme eventdate sauf qu'on a les id en plus
+            eventfinal.append(event[j])
 
     return eventfinal
 
 
 
-#Cette fonction permet d'effacer du calendrier tous les créneaux reservés précedement à partir du doodle afin de tout recommencer lors d'une mis à jour
+#Cette fonction permet d'effacer du calendrier tous les créneaux reservés précedement à partir du doodle afin de tout recommencer lors d'une mise à jour
 def efface(eventdate, key,nom_utilisateur):
     #On recupère les evenement à effacer et on les supprime
     for evenement in eventdate :
@@ -269,7 +303,7 @@ def mise_a_jour(key,nom_utilisateur,eventdate, participant_key):
     #on récupère les créneaux ou on est libre
     eventts=recup_creneau(key, nom_utilisateur, participant_key)
     #Et enfin on reserve dans le calendrier les créneaux libres
-    creneau_reserve=reserve_creneaux(eventts[0],key)
+    creneau_reserve=reserve_creneaux(eventts[0],eventts[6],key)
 
     return creneau_reserve
 

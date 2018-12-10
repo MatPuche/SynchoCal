@@ -23,10 +23,11 @@ CREATE TABLE sondage (
 );
 
 CREATE TABLE sondage_user (
-  sondage_key TEXT UNIQUE NOT NULL PRIMARY KEY,
+  sondage_key TEXT NOT NULL,
   user_id INTEGER NOT NULL,
   FOREIGN KEY (sondage_key) REFERENCES sondage (key)
   FOREIGN KEY (user_id) REFERENCES user (id)
+  CONSTRAINT PK_sondage PRIMARY KEY (sondage_key,user_id)
 );
 
 CREATE TABLE creneau (

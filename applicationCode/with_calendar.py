@@ -1,5 +1,3 @@
-#Ce fichier contient toutes les fonctions d'intéraction avec le calendrier
-
 from __future__ import print_function
 import json
 import datetime
@@ -17,13 +15,13 @@ def connection_cal():
     store = file.Storage('token.json')
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+        flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
 
         parser = argparse.ArgumentParser(parents=[tools.argparser])
         flags = parser.parse_args(args=['--noauth_local_webserver'])
 
         creds = tools.run_flow(flow, store, flags)
-    service = build('calendar', 'v3', http=creds.authorize(Http()))
+    service = build('calendar', 'v3', credentials = creds)
 
 
     return service
