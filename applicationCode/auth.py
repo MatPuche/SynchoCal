@@ -14,7 +14,7 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from applicationCode.db import get_db
-from . import with_doodle
+#from . import with_doodle
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['DEBUG'] = '1'
@@ -40,7 +40,10 @@ app = flask.Flask(__name__)
 # key. See http://flask.pocoo.org/docs/0.12/quickstart/#sessions.
 app.secret_key = 'ljgjhkgl'
 
-global service
+
+
+
+
 
 #formulaire d'inscription à remplir pour créer son compte sur l'application
 @bp.route('/inscription', methods=('GET', 'POST'))
@@ -108,7 +111,7 @@ def login():
 
             service = googleapiclient.discovery.build(
                  API_SERVICE_NAME, API_VERSION, credentials=credentials)
-
+        
             flask.session['credentials'] = credentials_to_dict(credentials)
 
             return redirect(url_for('page_principale.liste_sondages'))
@@ -232,3 +235,6 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
+def returnservice():
+    return service

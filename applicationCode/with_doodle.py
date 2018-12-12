@@ -12,11 +12,10 @@ from . import with_calendar
 from . import auth
 
 
+
 url="https://doodle.com/api/v2.0/polls/"
 
 #On introduit service
-
-
 
 #Fonction qui permet de convertir les dates de début et de fin d'un créneau doodle sous la forme d'un json. Ce json est sous la forme qu'il faut envoyer à google
 #calendar pour ajouter un evenemet. Prend en argument le titre le lieu et la description du doodle ainsi que la liste des dates des créneaux.
@@ -95,9 +94,9 @@ def remplissage_doodle(preferences,optionsHash,key, nom_utilisateur, participant
 
 
 def recup_creneau(key,nom_utilisateur, participant_key ):
-    service=with_calendar.connection_cal()
     #1er janvier 1970 en date python
     a = datetime.datetime(1970, 1, 1)
+    service=auth.returnservice()
 
     #on stocke le json dans le dictionnaire l
     r = rq.get(url+key)
@@ -254,8 +253,8 @@ def recup_creneau(key,nom_utilisateur, participant_key ):
 
 
 def reserve_creneaux(eventdate, key):
-    service=with_calendar.connection_cal()
     eventfinal=[]
+    service=auth.returnservice()
 
     #On parcours les evenement qu'on a convertit après avoir récupéré les dates des créneaux dans le doodle
     for k in eventdate:
