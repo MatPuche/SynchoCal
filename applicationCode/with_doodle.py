@@ -1,5 +1,4 @@
 #Ce fichier contient toutes les fonctions d'intéraction avec le sondage Doodle
-
 from __future__ import print_function
 from googleapiclient.discovery import build
 from httplib2 import Http
@@ -10,12 +9,16 @@ import datetime
 import time
 from . import with_calendar
 from . import auth
+import google.oauth2.credentials
 
 
 
 url="https://doodle.com/api/v2.0/polls/"
 
 #On introduit service
+API_SERVICE_NAME = 'calendar'
+API_VERSION = 'v3'
+
 
 #Fonction qui permet de convertir les dates de début et de fin d'un créneau doodle sous la forme d'un json. Ce json est sous la forme qu'il faut envoyer à google
 #calendar pour ajouter un evenemet. Prend en argument le titre le lieu et la description du doodle ainsi que la liste des dates des créneaux.
