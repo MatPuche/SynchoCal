@@ -110,7 +110,7 @@ def login():
 
             service = googleapiclient.discovery.build(
                  API_SERVICE_NAME, API_VERSION, credentials=credentials)
-        
+
             flask.session['credentials'] = credentials_to_dict(credentials)
 
             return redirect(url_for('page_principale.liste_sondages'))
@@ -234,6 +234,3 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
-
-def returnservice():
-    return service
