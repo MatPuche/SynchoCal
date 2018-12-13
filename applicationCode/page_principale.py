@@ -48,7 +48,7 @@ def ajouter():
             lieu=sond[4]
             description=sond[5]
             date=datetime.now().date()
-            creneau_reserve=str(with_doodle.reserve_creneaux(sond[0],key))
+            creneau_reserve=str(with_doodle.reserve_creneaux(sond[0],sond[6],key))
             db.execute(
                 'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
                 ' VALUES (?, ?, ?, ?, ?, ?, ?)',
