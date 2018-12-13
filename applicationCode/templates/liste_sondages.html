@@ -16,10 +16,13 @@
   {% for sondage in sondages %}
   <TR>
     <TD>
-    <TABLE width= "100%" class="sond_indiv">
+
+    {%if sondage['est_final']==1 %}<TABLE width= "100%" class="sond_final">
+    {%else%}<TABLE width= "100%" class="sond_indiv"> {% endif %}
       <TR>
         <TD align="center">
-          <h3>{{ sondage['titre'] }}</h3>
+          <h3>{{ sondage['titre']}}</h3>
+          {%if sondage['est_final']==1 %}<span class="final">(DATE FINALE CHOISIE)</span></br></br> {% endif %}
         </TD>
         <TD rowspan="2" width="40%" align="center">
           <form action="{{ url_for('page_principale.mise_a_jour', key=sondage['key'], id=g.user['id'], nom_utilisateur=g.user['nom_doodle']) }}" method="post">
