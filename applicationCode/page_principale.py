@@ -25,17 +25,20 @@ def liste_sondages():
 @login_required
 def ajouter():
     error=None
+    db = get_db()
     if request.method == 'POST':
         key = request.form['key']
 
         if not key:
             error = 'Veuillez entrer la clé du sondage.'
+        elif db.execute(
+            'SELECT key FROM sondage WHERE key = ?', (key,)
+        ).fetchone() is not None:
+            error = 'Le sondage {} existe déjà.'.format(key)
 
         if error is not None:
             flash(error)
         else:
-        #try:
-            db = get_db()
             nom_utilisateur= (db.execute(
                                     'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
                                     ).fetchone())['nom_doodle']

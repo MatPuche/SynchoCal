@@ -8,13 +8,13 @@ import requests as rq
 import json
 import datetime
 import time
+import flask
+
 from . import with_calendar
 
 
 url="https://doodle.com/api/v2.0/polls/"
 
-#On introduit service
-service=with_calendar.connection_cal()
 
 #Fonction qui permet de convertir les dates de début et de fin d'un créneau doodle sous la forme d'un json. Ce json est sous la forme qu'il faut envoyer à google
 #calendar pour ajouter un evenement. Prend en argument le titre le lieu et la description du doodle ainsi que la liste des dates des créneaux.
@@ -107,6 +107,10 @@ def jourEntier (evenement):
 
 
 def recup_creneau(key,nom_utilisateur, participant_key):
+
+
+    if 'credentials' in flask.session:
+        service=with_calendar.connection_cal()
 
     #1er janvier 1970 en date python
     a = datetime.datetime(1970, 1, 1)
@@ -286,6 +290,9 @@ def recup_creneau(key,nom_utilisateur, participant_key):
 #On remplit le calendrier avec les créneaux réservés pour le sondage tant qu'il n'est pas terminé
 def reserve_creneaux(eventdate, jour_entier, key):
 
+    if 'credentials' in flask.session:
+        service=with_calendar.connection_cal()
+
     eventfinal=[]
     #On parcourt les evenements qu'on a converti après avoir récupéré les dates des créneaux dans le doodle
     for k in eventdate:
@@ -314,6 +321,10 @@ def reserve_creneaux(eventdate, jour_entier, key):
 
 #Cette fonction permet d'effacer du calendrier tous les créneaux reservés précedement à partir du doodle afin de tout recommencer lors d'une mise à jour
 def efface(eventdate, key,nom_utilisateur):
+
+    if 'credentials' in flask.session:
+        service=with_calendar.connection_cal()
+
     #On recupère les evenement à effacer et on les supprime
     for evenement in eventdate :
         print(evenement)

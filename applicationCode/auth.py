@@ -100,7 +100,6 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            #return redirect(url_for('page_principale.liste_sondages'))
 
             if 'credentials' not in flask.session:
                 return flask.redirect(url_for('auth.authorize'))
