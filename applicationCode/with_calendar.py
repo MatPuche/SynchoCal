@@ -12,16 +12,8 @@ SCOPES = 'https://www.googleapis.com/auth/calendar'
 
 #   Afin de créer le fichier token.json, il faut exécuter
 def connection_cal():
-    store = file.Storage('token.json')
-    creds = store.get()
-    if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
 
-        parser = argparse.ArgumentParser(parents=[tools.argparser])
-        flags = parser.parse_args(args=[])
-
-        creds = tools.run_flow(flow, store, flags)
-    service = build('calendar', 'v3', credentials = creds)
+    
 
 
     return service

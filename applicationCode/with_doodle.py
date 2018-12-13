@@ -350,4 +350,4 @@ def mise_a_jour(key,nom_utilisateur,eventdate, participant_key):
     #Et enfin on reserve dans le calendrier les créneaux libres
     creneau_reserve=reserve_creneaux(eventts[0],eventts[6],key)
 
-return creneau_reserve
+    return creneau_reserve
