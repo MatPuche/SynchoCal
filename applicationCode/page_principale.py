@@ -39,6 +39,7 @@ def ajouter():
         if error is not None:
             flash(error)
         else:
+            #try :
             nom_utilisateur= (db.execute(
                                     'SELECT nom_doodle FROM user WHERE id = ?', (g.user['id'],)
                                     ).fetchone())['nom_doodle']
@@ -50,12 +51,13 @@ def ajouter():
             titre=sond[3]
             lieu=sond[4]
             description=sond[5]
+            final=sond[7]
             date=datetime.now().date()
             creneau_reserve=str(with_doodle.reserve_creneaux(sond[0],sond[6],key))
             db.execute(
-                'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree)'
-                ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (key, titre, lieu, description,creneau_reserve,date,date)
+                'INSERT INTO sondage (key, titre, lieu, description,liste_options,date_maj,date_entree, est_final)'
+                ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (key, titre, lieu, description,creneau_reserve,date,date, final)
             )
             db.execute(
                 'INSERT INTO sondage_user (sondage_key, user_id)'
@@ -64,8 +66,8 @@ def ajouter():
             )
             db.commit()
             return redirect(url_for('page_principale.liste_sondages'))
-        #except:
-        #    flash("Cette clé ne correspond à aucun sondage. Entrez une clé valide.")
+            #except :
+            #    flash('Clé de sondage invalide')
 
     return render_template('ajouter.html')
 
@@ -84,16 +86,14 @@ def mise_a_jour(key,id,nom_utilisateur):
     eventdate = eval((db.execute(
                             'SELECT liste_options FROM sondage WHERE key = ?', (key,)
                             ).fetchone())['liste_options'])
-    print("event:")
-    print(eventdate)
-    event_maj = str(with_doodle.mise_a_jour(key,nom_utilisateur,eventdate, participant_key))
-    print("eventmaj: ")
-    print(event_maj)
+
+    maj = with_doodle.mise_a_jour(key,nom_utilisateur,eventdate, participant_key)
+    event_maj = str(maj[0])
     date_maj=datetime.now().date()
     db.execute(
-                'UPDATE sondage SET liste_options = ?, date_maj = ?'
+                'UPDATE sondage SET liste_options = ?, date_maj = ?, est_final = ?'
                 ' WHERE key = ?',
-                (event_maj, date_maj,key)
+                (event_maj, date_maj, maj[1],key)
             )
     db.commit()
     return redirect(url_for('page_principale'))

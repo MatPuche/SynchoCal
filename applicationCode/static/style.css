@@ -44,6 +44,13 @@ a { color: #377ba8; }
   border-radius: 20px;
   border:1px solid #048F8D;
 }
+
+.sond_final {
+  background: #F2F216;
+  border-radius: 20px;
+  border:1px solid #048F8D;
+}
+
 .sond1 {padding: 0 0 0 1rem; }
 .petit{font-size: 10px;}
 .moyen {font-size: 15px;}
@@ -57,3 +64,7 @@ a { color: #377ba8; }
 .saisie {width: 95%; background-color: #EBF8FE;}
 .case {padding: 1rem}
 .flash { margin: 1em 0; padding: 1em; background: #cae6f6; border: 1px solid #FF0000; color: #FF0000;}
+.final {
+  font-size: 14px;
+  color: #F21616;
+}

@@ -124,6 +124,9 @@ def recup_creneau(key,nom_utilisateur, participant_key):
     #On initialise à False le booléen qui indique si le sondage est sur des jours entiers ou non.
     jour_entier = False
 
+    #On considère que le sondage n'est pas final pour commencer
+    final=False
+
     #la liste des options (créneaux) de notre doodle (vide pour l'instant)
     liste_options = []
 
@@ -143,11 +146,11 @@ def recup_creneau(key,nom_utilisateur, participant_key):
     try:
         #On regarde si le sondage est fermé ou pas
         t=l['closed']
-
+        final = True
         #Si le sondage est fermé on récupère tous les crénaux qui sont finaux
         for temps in l["options"]:
 
-            jour_entier = journtier(temps)
+            jour_entier = jourEntier(temps)
 
             try:
                 #on vérifie si l'évenement est final
@@ -284,7 +287,7 @@ def recup_creneau(key,nom_utilisateur, participant_key):
 
     #Cette fonction renvoie la liste des évenement à reserver dans le calendrier, la liste des préférences à envoyer au doodle et l'optionhash qui est utile
     #pour ecrire dans un doodle.
-    return eventdate2,preferences,optionsHash,titre,lieu,description, jour_entier
+    return eventdate2,preferences,optionsHash,titre,lieu,description, jour_entier, final
 
 
 #On remplit le calendrier avec les créneaux réservés pour le sondage tant qu'il n'est pas terminé
@@ -361,4 +364,4 @@ def mise_a_jour(key,nom_utilisateur,eventdate, participant_key):
     #Et enfin on reserve dans le calendrier les créneaux libres
     creneau_reserve=reserve_creneaux(eventts[0],eventts[6],key)
 
-    return creneau_reserve
+    return creneau_reserve, eventts[7]

@@ -19,7 +19,8 @@ CREATE TABLE sondage (
   date_maj DATETIME,
   lieu TEXT,
   description TEXT,
-  liste_options JSON NOT NULL
+  liste_options JSON NOT NULL,
+  est_final BOOLEAN 
 );
 
 CREATE TABLE sondage_user (
