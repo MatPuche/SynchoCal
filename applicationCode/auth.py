@@ -179,10 +179,8 @@ def revoke():
       headers = {'content-type': 'application/x-www-form-urlencoded'})
 
   status_code = getattr(revoke, 'status_code')
-  if status_code == 200:
-    return('Credentials successfully revoked.' + print_index_table())
-  else:
-    return('An error occurred.' + print_index_table())
+  session.clear()
+  return redirect(url_for('auth.login'))
 
 
 @bp.route('/clear')
@@ -220,8 +218,8 @@ def load_logged_in_user():
 #page pour se deconnecter
 @bp.route('/logout')
 def logout():
-    session.clear()
-    return redirect(url_for('auth.login'))
+
+    return redirect(url_for('auth.revoke'))
 
 #certaines fonctionnalités requierent d'être connecté à un compte pour être utilisées
 #on redirige donc vers la page d'identification login
