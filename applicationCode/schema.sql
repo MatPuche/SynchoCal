@@ -20,7 +20,7 @@ CREATE TABLE sondage (
   lieu TEXT,
   description TEXT,
   liste_options JSON NOT NULL,
-  est_final BOOLEAN 
+  est_final BOOLEAN
 );
 
 CREATE TABLE sondage_user (
@@ -39,7 +39,7 @@ CREATE TABLE creneau (
 
 CREATE TABLE creneau_sondage (
   creneau_id INTEGER NOT NULL,
-  sondage_key TEXT UNIQUE NOT NULL,
+  sondage_key TEXT NOT NULL,
   FOREIGN KEY (creneau_id) REFERENCES creneau (id),
   FOREIGN KEY (sondage_key) REFERENCES sondage (key)
-)
+);
