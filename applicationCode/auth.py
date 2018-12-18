@@ -78,7 +78,7 @@ def inscription():
         flash(error)
     return render_template('inscription.html')
 
-#page pour se connecter à l'application
+#vue pour se connecter à l'application
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
 
@@ -103,7 +103,7 @@ def login():
             if 'credentials' not in flask.session:
                 return flask.redirect(url_for('auth.authorize'))
 
-             # Load credentials from the session.
+             # Charge les credentials de la session.
             credentials = google.oauth2.credentials.Credentials(
                  **flask.session['credentials'])
 
@@ -127,7 +127,7 @@ def authorize():
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
       CLIENT_SECRETS_FILE, scopes=SCOPES)
 
-    flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
+  flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
 
   authorization_url, state = flow.authorization_url(
 
@@ -139,6 +139,7 @@ def authorize():
   return flask.redirect(authorization_url)
 
 
+#pour créer les credentials l'utilisateur une fois l'authorisation effectuée
 @bp.route('/oauth2callback')
 def oauth2callback():
 
@@ -148,13 +149,11 @@ def oauth2callback():
       CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
   flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
 
-  # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+  # Utilise la réponse du serveur d'autorisation pour récupérer les tokens OAuth 2.0.
   authorization_response = flask.request.url
   flow.fetch_token(authorization_response=authorization_response)
 
-  # Store credentials in the session.
-  # ACTION ITEM: In a production app, you likely want to save these
-  #              credentials in a persistent database instead.
+  # Enregistre les credentials dans la session
   credentials = flow.credentials
   flask.session['credentials'] = credentials_to_dict(credentials)
 
