@@ -1,4 +1,4 @@
-Pour faire fonctionner l'application WEB :
+Pour faire fonctionner l'application WEB en local :
 
 1) Telecharger Python 3.7
 
@@ -11,12 +11,14 @@ Pour faire fonctionner l'application WEB :
 4) Pour la première utilisation seulement, il faut initialiser la base de donnée :
     py -m flask init-db
 
-5) Pour pouvoir utiliser l'application, placer le fichier credentials.json dans le même dossier que l'application (dans le dossier applicationCode)
-cf. rapport partie "Connection du calendrier Google à Python via l’API"
+5)Pour permettre à l'application de fonctionner, il faut télécharger certains modules :
+       pip install --upgrade google-api-python-client oauth2client
+       pip install requests
 
-6) Pour lancer l'application, se placer dans le répertoire de l'application et executer dans l'invite de commande :
+6) Pour pouvoir utiliser l'application, placer le fichier credentials.json dans le même dossier que l'application (dans le dossier applicationCode)
+cf. le tutoriel fourni par Google API pour se procurer les credentials (clé identifiant client)
+
+7) Pour lancer l'application, se placer dans le répertoire de l'application et executer dans l'invite de commande (sous Windows) :
     py -m flask run
 
-7) Pour permettre à l'application de fonctionner, il faut télécharger certains modules :
-    pip install --upgrade google-api-python-client oauth2client
-    pip install requests
+8) Se rendre sur l'URL locale suivante : http://127.0.0.1:5000
