@@ -24,20 +24,20 @@ os.environ['DEBUG'] = '1'
 #creation d'un blueprint nommé "auth", associé à l'URL /auth
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-# This variable specifies the name of a file that contains the OAuth 2.0
-# information for this application, including its client_id and client_secret.
+
+#Cette variable donne le nom du fichier qui contient les informations qui permet
+#de se connecter avec OAuth 2.0
 CLIENT_SECRETS_FILE = "client_secret.json"
 
-# This OAuth 2.0 access scope allows for full read/write access to the
-# authenticated user's account and requires requests to use an SSL connection.
+
+#Le scope est un accès de OAuth 2.0 pour pouvoir écrire et lire dans le calendrier
+#de l'utilisateur identifié
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 API_SERVICE_NAME = 'calendar'
 API_VERSION = 'v3'
 
 app = flask.Flask(__name__)
-# Note: A secret key is included in the sample so that it works.
-# If you use this code in your application, replace this with a truly secret
-# key. See http://flask.pocoo.org/docs/0.12/quickstart/#sessions.
+#Clé privé choisi par nous pour protéger notre application
 app.secret_key = 'ljgjhkgl'
 
 
@@ -104,7 +104,7 @@ def login():
             if 'credentials' not in flask.session:
                 return flask.redirect(url_for('auth.authorize'))
 
-             # Load credentials from the session.
+             # On prend les credentials liée à la sesson
             credentials = google.oauth2.credentials.Credentials(
                  **flask.session['credentials'])
 
@@ -124,19 +124,19 @@ def login():
 @bp.route('/authorize')
 def authorize():
   # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
+  #Créé un flow pour gérer l'autorisation de l'authentification
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
       CLIENT_SECRETS_FILE, scopes=SCOPES)
 
     flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
 
     authorization_url, state = flow.authorization_url(
-      # Enable offline access so that you can refresh an access token without
-      # re-prompting the user for permission. Recommended for web server apps.
+      #Permet de réactualiser les token pour avoir accès au calendrier sans
+      #avoir à redemander l'autorisation à chaque fois
       access_type='offline',
-      # Enable incremental authorization. Recommended as a best practice.
       include_granted_scopes='true')
 
-  # Store the state so the callback can verify the auth server response.
+  # Stock l'état de la réponse d l'autorisation dans la session courante
     flask.session['state'] = state
     print(authorization_url)
     return flask.redirect(authorization_url)
@@ -144,8 +144,8 @@ def authorize():
 
 @bp.route('/oauth2callback')
 def oauth2callback():
-  # Specify the state when creating the flow in the callback so that it can
-  # verified in the authorization server response.
+
+  #Récupère l'état de l'autorisation lorsque l'on demande l'accès au calenrier de Google
   state = flask.session['state']
 
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
