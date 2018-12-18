@@ -14,10 +14,12 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from applicationCode.db import get_db
-from . import with_doodle
-
-
+#from . import with_doodle
+import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['DEBUG'] = '1'
+
+
 
 #creation d'un blueprint nommé "auth", associé à l'URL /auth
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -36,6 +38,10 @@ API_VERSION = 'v3'
 app = flask.Flask(__name__)
 
 app.secret_key = 'ljgjhkgl'
+
+
+
+
 
 
 #formulaire d'inscription à remplir pour créer son compte sur l'application
@@ -95,13 +101,13 @@ def login():
             session['user_id'] = user['id']
 
             if 'credentials' not in flask.session:
-              return flask.redirect(url_for('auth.authorize'))
+                return flask.redirect(url_for('auth.authorize'))
 
              # Load credentials from the session.
             credentials = google.oauth2.credentials.Credentials(
                  **flask.session['credentials'])
 
-            calendar = googleapiclient.discovery.build(
+            service = googleapiclient.discovery.build(
                  API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
             flask.session['credentials'] = credentials_to_dict(credentials)
@@ -121,9 +127,10 @@ def authorize():
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
       CLIENT_SECRETS_FILE, scopes=SCOPES)
 
-  flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
+    flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
 
   authorization_url, state = flow.authorization_url(
+
       access_type='offline',
       include_granted_scopes='true')
 
@@ -168,10 +175,8 @@ def revoke():
       headers = {'content-type': 'application/x-www-form-urlencoded'})
 
   status_code = getattr(revoke, 'status_code')
-  if status_code == 200:
-    return('Credentials successfully revoked.' + print_index_table())
-  else:
-    return('An error occurred.' + print_index_table())
+  session.clear()
+  return redirect(url_for('auth.login'))
 
 
 @bp.route('/clear')
@@ -209,8 +214,8 @@ def load_logged_in_user():
 #page pour se deconnecter
 @bp.route('/logout')
 def logout():
-    session.clear()
-    return redirect(url_for('auth.login'))
+
+    return redirect(url_for('auth.revoke'))
 
 #certaines fonctionnalités requierent d'être connecté à un compte pour être utilisées
 #on redirige donc vers la page d'identification login
