@@ -24,11 +24,22 @@ os.environ['DEBUG'] = '1'
 #creation d'un blueprint nommé "auth", associé à l'URL /auth
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+<<<<<<< HEAD
+
+#Cette variable donne le nom du fichier qui contient les informations qui permet
+#de se connecter avec OAuth 2.0
+CLIENT_SECRETS_FILE = "client_secret.json"
+
+
+#Le scope est un accès de OAuth 2.0 pour pouvoir écrire et lire dans le calendrier
+#de l'utilisateur identifié
+=======
 # Cette variable spécifie le nom du fichier contenant les informations OAuth 2.0 pour l'application,
 # y compris son client_id et son client_secret.
 CLIENT_SECRETS_FILE = "client_secret.json"
 
 # Ce Scope d'accès OAuth 2.0 autorise un accès complet en lecture et éciture au compte Google authentifié.
+>>>>>>> 9abd3a03816f73eca0128ba6e41065c364d72027
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 # caractéristiques de l'API de Google Calendar
@@ -36,7 +47,11 @@ API_SERVICE_NAME = 'calendar'
 API_VERSION = 'v3'
 
 app = flask.Flask(__name__)
+<<<<<<< HEAD
+#Clé privé choisi par nous pour protéger notre application
+=======
 
+>>>>>>> 9abd3a03816f73eca0128ba6e41065c364d72027
 app.secret_key = 'ljgjhkgl'
 
 
@@ -103,7 +118,11 @@ def login():
             if 'credentials' not in flask.session:
                 return flask.redirect(url_for('auth.authorize'))
 
+<<<<<<< HEAD
+             # On prend les credentials liée à la sesson
+=======
              # Charge les credentials de la session.
+>>>>>>> 9abd3a03816f73eca0128ba6e41065c364d72027
             credentials = google.oauth2.credentials.Credentials(
                  **flask.session['credentials'])
 
@@ -123,18 +142,37 @@ def login():
 # SynchroCal pour authentifier son compte Google.
 @bp.route('/authorize')
 def authorize():
+<<<<<<< HEAD
+  # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
+  #Créé un flow pour gérer l'autorisation de l'authentification
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+=======
   # Créé une istance "flow" pour gérer les étapes d'octroi d'autorisations OAuth 2.0.
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+>>>>>>> 9abd3a03816f73eca0128ba6e41065c364d72027
       CLIENT_SECRETS_FILE, scopes=SCOPES)
 
   flow.redirect_uri = flask.url_for('auth.oauth2callback', _external=True)
 
   authorization_url, state = flow.authorization_url(
 
+<<<<<<< HEAD
+    authorization_url, state = flow.authorization_url(
+      #Permet de réactualiser les token pour avoir accès au calendrier sans
+      #avoir à redemander l'autorisation à chaque fois
+      access_type='offline',
+      include_granted_scopes='true')
+
+  # Stock l'état de la réponse d l'autorisation dans la session courante
+    flask.session['state'] = state
+    print(authorization_url)
+    return flask.redirect(authorization_url)
+=======
       access_type='offline',
       include_granted_scopes='true')
 
   flask.session['state'] = state
+>>>>>>> 9abd3a03816f73eca0128ba6e41065c364d72027
 
   return flask.redirect(authorization_url)
 
@@ -143,6 +181,10 @@ def authorize():
 @bp.route('/oauth2callback')
 def oauth2callback():
 
+<<<<<<< HEAD
+  #Récupère l'état de l'autorisation lorsque l'on demande l'accès au calenrier de Google
+=======
+>>>>>>> 9abd3a03816f73eca0128ba6e41065c364d72027
   state = flask.session['state']
 
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
