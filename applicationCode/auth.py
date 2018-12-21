@@ -181,10 +181,7 @@ def authorize():
 @bp.route('/oauth2callback')
 def oauth2callback():
 
-<<<<<<< HEAD
   #Récupère l'état de l'autorisation lorsque l'on demande l'accès au calenrier de Google
-=======
->>>>>>> 9abd3a03816f73eca0128ba6e41065c364d72027
   state = flask.session['state']
 
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
